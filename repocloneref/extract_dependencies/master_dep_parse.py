@@ -46,16 +46,16 @@ def generate_deps(repo_paths, index):
     return lib_deps
 
 def run():
-    try:
-        last_timestamp = go.find_one({'key': 'last_update'})
-        if last_timestamp:
-            last_timestamp = last_timestamp['datetime'][:10]
-        else:
-            print('Exiting. Failed to retrieve last updated timestamp from mongodb')
-            return
-    except:
-        print('Exiting. Failed to retrieve last updated timestamp from mongodb')
-        return
+    # try:
+    #     last_timestamp = go.find_one({'key': 'last_update'})
+    #     if last_timestamp:
+    #         last_timestamp = last_timestamp['datetime'][:10]
+    #     else:
+    #         print('Exiting. Failed to retrieve last updated timestamp from mongodb')
+    #         return
+    # except:
+    #     print('Exiting. Failed to retrieve last updated timestamp from mongodb')
+    #     return
     repo_localpath = get_go_names_and_localpath(last_timestamp)
     added_names = []
     all_dependencies = {}

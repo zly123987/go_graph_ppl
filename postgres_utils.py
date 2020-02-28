@@ -79,10 +79,10 @@ def get_go_names_and_localpath(last_timestamp):
         conn.autocommit = True
         cur = conn.cursor()
 
-        sql_str = """SELECT sl.name, sr.local_path FROM public."2_scantist_repolist" as sr 
+        sql_str = f"""SELECT sl.name, sr.local_path FROM public."2_scantist_repolist" as sr 
             inner join public."2_scantist_libraryrepourl" as slr on slr.repolist_id = sr.id
             inner join public.scantist_library as sl on sl.id = slr.library_id
-            where sl.platform = 'Go' and sl.created >= '%s';""" % last_timestamp
+            where sl.platform = 'Go' and sl.created >= '{last_timestamp}';"""
         cur.execute(sql_str)
         return dict(cur.fetchall())
 
