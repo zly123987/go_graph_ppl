@@ -33,7 +33,7 @@ def generate_deps(repo_paths, index):
         count += 1
         dependencies = {}
         # try:
-        deps = extract_package_master(path, name)
+        deps = extract_packages(path, name)
         print(deps)
         dependencies = {
             'name': name,
@@ -56,19 +56,21 @@ def run():
     # except:
     #     print('Exiting. Failed to retrieve last updated timestamp from mongodb')
     #     return
+    last_timestamp = '2020-01-01'
     repo_localpath = get_go_names_and_localpath(last_timestamp)
     added_names = []
     all_dependencies = {}
     added = {}
-    for x in added_names:
+    for x in repo_localpath:
        added[x] = repo_localpath[x]
     repo_count = len(added)
     batch = 400
     repo_localpath_list = []
     repo_path_tmp = {}
-    for name, path in added.items():
+    for name, path in repo_localpath.items():
         repo_path_tmp[name] = path.replace('/REPOS', '/DATA')
-        if batch >= len(repo_path_tmp):
+        print(len(repo_path_tmp))
+        if batch == len(repo_path_tmp):
             repo_localpath_list.append(repo_path_tmp)
             repo_path_tmp = {}
     print(len(repo_localpath_list))
