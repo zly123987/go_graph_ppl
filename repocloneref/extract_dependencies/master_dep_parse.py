@@ -1,5 +1,5 @@
 import os
-from repocloneref.extract_dependencies.extract_deps_for_package import extract_packages
+from repocloneref.extract_dependencies.extract_deps_for_package import extract_package_master
 import pymongo
 import datetime
 import json
@@ -33,7 +33,7 @@ def generate_deps(repo_paths, index):
         count += 1
         dependencies = {}
         # try:
-        deps = extract_packages(path, name)
+        deps = extract_package_master(path, name)
         print(deps)
         dependencies = {
             'name': name,

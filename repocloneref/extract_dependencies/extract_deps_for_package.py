@@ -16,6 +16,19 @@ from repocloneref.extract_dependencies.test_semver import get_major_minor, compa
 #         filtered_tag_dict[mm_v] = tag
 #         mm_tag_mapping[tag] = mm_v
 #     return sorted_tags, filtered_tag_dict, mm_tag_mapping
+def extract_package_master(dir, id):
+    repo = Repo(dir)
+    lib_deps = {}
+    os.chdir(dir)
+    try:
+        repo.git.checkout('master')
+        deps = parse_mod(dir, id)
+    except Exception as e:
+        print(e, id)
+        with open('failed_id','a') as f:
+            f.write(id)
+    lib_deps['master'] = deps
+    return lib_deps
 
 
 
