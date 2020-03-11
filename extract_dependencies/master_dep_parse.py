@@ -1,5 +1,5 @@
 import os
-from repocloneref.extract_dependencies.extract_deps_for_package import extract_package_master
+from extract_dependencies.extract_deps_for_package import extract_package_master
 import pymongo
 import datetime
 import json

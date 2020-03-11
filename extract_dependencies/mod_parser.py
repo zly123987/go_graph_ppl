@@ -1,7 +1,7 @@
 import os
 import re
 import subprocess
-from repocloneref.extract_dependencies.get_deps_without_mod import get_deps_without_mod
+from extract_dependencies.get_deps_without_mod import get_deps_without_mod
 def parse_mod(root_dir, id):
     dir_mod = root_dir + '/go.mod'
     dir_gopkg = root_dir + '/Gopkg.lock'

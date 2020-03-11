@@ -34,7 +34,8 @@ ScantistLibrary = Base.classes.scantist_library
 ScantistLibraryVersionIssue = Base.classes.scantist_libraryversionissue
 ScantistSecurityIssue = Base.classes.scantist_securityissue
 
-def _get_updated_vul_info(timestamp):
+
+def _get_updated_vul_info(timestamp=datetime.datetime(2017, 7, 25)):
     """
     start from issues from a timestamp which is stored last time we did this update,
     get all related versions and their libname, vendor, version number
@@ -106,10 +107,6 @@ def _get_updated_vul_info(timestamp):
             for ver in vers:
                 vul_relation_list.append((vul['public_id'], libvendor.lstrip(':')))
                 vulnerable_lib.append(libvendor.lstrip(':'))
-    vul_relation_list = list(set(vul_relation_list))
     vulnerable_lib =list(set(vulnerable_lib))
-    print(len(vulnerable_lib))
-    print(vulnerable_lib)
+    return vulnerable_lib
 
-
-_get_updated_vul_info(datetime.datetime(2017, 7, 25))

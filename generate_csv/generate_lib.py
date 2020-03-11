@@ -1,10 +1,9 @@
-import os
 import json
 import csv
 import re
 import pymongo
 import concurrent.futures
-from repocloneref.extract_dependencies.test_semver import sort_versions
+from extract_dependencies.test_semver import sort_versions
 dir = '/home/lcwj3/golang_data/go_deps'
 
 library_csv_doc = [['libraryId:ID(Library)','library',':LABEL']]

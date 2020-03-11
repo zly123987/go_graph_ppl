@@ -1,4 +1,7 @@
-from repocloneref.extract_dependencies.run_dep_parse import run
-from repocloneref.extract_dependencies.master_dep_parse import run as run_master
+from extract_dependencies.master_dep_parse import run as parse_dep_for_new_libs
+from calculating_affected_libs.get_libdepends import filter_affecte_libs
+from extract_dependencies.run_dep_parse import run as parse_dep_for_affected_libs
+parse_dep_for_new_libs()
+filter_affecte_libs()
+parse_dep_for_affected_libs()
 
-run_master()
