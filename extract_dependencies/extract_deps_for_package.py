@@ -1,7 +1,9 @@
 import os
-from git import Repo, Git
-from extract_dependencies.mod_parser import parse_mod
-from extract_dependencies.test_semver import is_valid_version
+from git import Repo
+import shlex
+import subprocess
+from repocloneref.extract_dependencies.mod_parser import parse_mod
+from repocloneref.extract_dependencies.test_semver import get_major_minor, compare_versions, sort_versions, is_valid_version
 #get the latest version for each majorminor
 # def filter_tags_name(tag_list):
 #     filtered_tag_dict = {}
@@ -22,11 +24,20 @@ def extract_package_master(dir, id):
     try:
         repo.git.checkout('master')
         deps = parse_mod(dir, id)
+        lib_deps['master'] = deps
     except Exception as e:
         print(e, id)
-        with open('failed_id','a') as f:
-            f.write(id)
-    lib_deps['master'] = deps
+        try:
+            command_line = "git remote show https://"+ id +" | grep \"HEAD branch\" | sed 's/.*: //'"
+            p = subprocess.Popen(command_line, stdin=subprocess.PIPE, shell=True, stdout=subprocess.PIPE).communicate()[0].decode('utf-8').replace('\n','')
+            repo.git.checkout(p)
+            print('checkout to', p)
+            deps = parse_mod(dir, id)
+            lib_deps['master'] = deps
+        except Exception as e:
+            print(e,id)
+            with open('failed_id','a') as f:
+                f.write(id)
     return lib_deps
 
 
