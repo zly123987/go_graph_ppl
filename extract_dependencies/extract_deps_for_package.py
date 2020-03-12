@@ -56,7 +56,7 @@ def extract_packages(dir, id, existing):
     count = 0
     if tag_names:
         for tag in tag_names:
-            print(count, tag)
+            # print(count, tag)
             count += 1
             repo.git.clean('-xdf')
             repo.git.checkout(tag, force=True)
@@ -75,7 +75,7 @@ def extract_packages(dir, id, existing):
                 valid_branches.append(branch.name)
         valid_branches = [t for t in valid_branches if t not in existing]
         for valid_branch in valid_branches:
-            print(count, valid_branch)
+            # print(count, valid_branch)
             count += 1
             repo.git.clean('-xdf')
             repo.git.checkout(valid_branch, force=True)

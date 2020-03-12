@@ -16,9 +16,9 @@ MONGO_DB = mongo.db
 home_dir = os.getcwd()
 deps = {}
 count = 0
+worker = 16
 
-
-def generate_deps(repo_paths, index):
+def generate_deps(repo_paths, index, all_count):
     c = pymongo.MongoClient(MONGO_HOST, port=MONGO_PORT)
     crawl = c['golang']
     # print(crawl.collection_names())
@@ -30,7 +30,7 @@ def generate_deps(repo_paths, index):
     lib_deps = {}
     count = 0
     for name, path in repo_paths.items():
-        print('index: ' + str(index) + ', count:' + str(count) + ', name: ' + name)
+        print('index: ' + str(index) + ', count:' + str(count) + f'*{str(worker)}'+', name: ' + name, all_count)
         count += 1
         try:
             # Get master branch(default) and other existing dependencies
@@ -75,7 +75,7 @@ def run():
     repo_localpath = get_affeted_localpath(affected_libs)
     print(len(affected_libs), 'libs are affected', len(repo_localpath), 'of them got localpath,'
           , len(affected_libs)-len(repo_localpath), 'are missing.')
-
+    all_count = len(repo_localpath)
     all_dependencies = {}
     batch = 1000
     repo_localpath_list = []
@@ -86,8 +86,8 @@ def run():
             repo_localpath_list.append(repo_path_tmp)
             repo_path_tmp = {}
 
-    with concurrent.futures.ProcessPoolExecutor(max_workers=8) as executor:
-        future_name = {executor.submit(generate_deps, repo_localpath_list[file], file): file for file in range(int(len(repo_localpath_list)))}
+    with concurrent.futures.ProcessPoolExecutor(max_workers=worker) as executor:
+        future_name = {executor.submit(generate_deps, repo_localpath_list[file], file, all_count): file for file in range(int(len(repo_localpath_list)))}
         for future in concurrent.futures.as_completed(future_name):
             all_dependencies = {**all_dependencies, **future.result()}
 
