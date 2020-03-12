@@ -25,6 +25,7 @@ def generate_deps(repo_paths, index):
     staging = crawl['go_affected_dependencies_staging']
     stable = crawl['go_affected_dependencies_stable']
     master = crawl['go_libdepends']
+    existing_stable_dep = {}
     lib_deps = {}
     count = 0
     for name, path in repo_paths.items():
