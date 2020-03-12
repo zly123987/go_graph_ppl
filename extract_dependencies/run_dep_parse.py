@@ -30,15 +30,16 @@ def generate_deps(repo_paths, index, all_count):
     lib_deps = {}
     count = 0
     for name, path in repo_paths.items():
-        print('index: ' + str(index) + ', count:' + str(count) + f'*{str(worker)}'+', name: ' + name, all_count)
+        print('index: ' + str(index) + ', count:' + str(count) + ', name: ' + name, all_count)
         count += 1
         try:
             # Get master branch(default) and other existing dependencies
             master_dep_doc = master.find_one({'name': name})
             if master_dep_doc:
                 master_dep = master_dep_doc['versions']
-                # Remove default branch from excluding list
-                default_branch = list(master_dep_doc['versions'].keys())[0]
+                if master_dep:
+                    # Remove default branch from excluding list
+                    default_branch = list(master_dep.keys())[0]
             stable_dep = stable.find_one({'name': name})
             if stable_dep:
                 existing_stable_dep = stable_dep['versions']
