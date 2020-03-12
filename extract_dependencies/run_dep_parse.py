@@ -25,6 +25,7 @@ def generate_deps(repo_paths, index):
     staging = crawl['go_affected_dependencies_staging']
     stable = crawl['go_affected_dependencies_stable']
     master = crawl['go_libdepends']
+    master_dep = {}
     existing_stable_dep = {}
     lib_deps = {}
     count = 0
@@ -33,19 +34,22 @@ def generate_deps(repo_paths, index):
         count += 1
         try:
             # Get master branch(default) and other existing dependencies
-            master_dep = master.find_one({'name': name})
-            if master_dep:
-                master_dep = master_dep['versions']
-                default_branch = list(master_dep.keys())[0]
+            master_dep_doc = master.find_one({'name': name})
+            if master_dep_doc:
+                master_dep = master_dep_doc['versions']
+                # Remove default branch from excluding list
+                default_branch = list(master_dep_doc['versions'].keys())[0]
             stable_dep = stable.find_one({'name': name})
             if stable_dep:
-                existing_stable_dep = list(stable_dep['versions'].keys())
+                existing_stable_dep = stable_dep['versions']
 
             # Extract the new versions' dependencies
-            deps = extract_packages(path, name, existing_stable_dep)
+            existing_dep = list(existing_stable_dep.keys())
+            existing_dep.remove(default_branch)
+            deps = extract_packages(path, name, existing_dep)
             dependencies = {
                 'name': name,
-                'versions': {**deps, **master_dep} if master_dep else deps
+                'versions': {**deps, **master_dep, **existing_stable_dep}
             }
             if dependencies['versions']:
                 staging.insert(dependencies, check_keys=False)
