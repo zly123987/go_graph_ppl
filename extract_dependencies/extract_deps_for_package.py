@@ -2,8 +2,8 @@ import os
 from git import Repo
 import shlex
 import subprocess
-from repocloneref.extract_dependencies.mod_parser import parse_mod
-from repocloneref.extract_dependencies.test_semver import get_major_minor, compare_versions, sort_versions, is_valid_version
+from extract_dependencies.mod_parser import parse_mod
+from extract_dependencies.test_semver import get_major_minor, compare_versions, sort_versions, is_valid_version
 #get the latest version for each majorminor
 # def filter_tags_name(tag_list):
 #     filtered_tag_dict = {}

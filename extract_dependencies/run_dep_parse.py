@@ -45,7 +45,7 @@ def generate_deps(repo_paths, index):
 
             # Extract the new versions' dependencies
             existing_dep = list(existing_stable_dep.keys())
-            existing_dep.remove(default_branch)
+            existing_dep.remove(default_branch) if default_branch in existing_dep else ''
             deps = extract_packages(path, name, existing_dep)
             dependencies = {
                 'name': name,
