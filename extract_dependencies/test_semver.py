@@ -1,27 +1,27 @@
 import ctypes
-getMajor = ctypes.CDLL('./repocloneref/extract_dependencies/semver.so').getMajor
+getMajor = ctypes.CDLL('./extract_dependencies/semver.so').getMajor
 getMajor.argtypes = [ctypes.c_char_p]
 getMajor.restype = ctypes.c_char_p
 
-getMajorMinor = ctypes.CDLL('./repocloneref/extract_dependencies/semver.so').getMajorMinor
+getMajorMinor = ctypes.CDLL('./extract_dependencies/semver.so').getMajorMinor
 getMajorMinor.argtypes = [ctypes.c_char_p]
 getMajorMinor.restype = ctypes.c_char_p
 
 
-sortVers = ctypes.CDLL('./repocloneref/extract_dependencies/semver.so').sortVers
+sortVers = ctypes.CDLL('./extract_dependencies/semver.so').sortVers
 sortVers.argtypes = [ctypes.c_char_p]
 sortVers.restype = ctypes.c_char_p
 
-parse = ctypes.CDLL('./repocloneref/extract_dependencies/parse.so').Parse
+parse = ctypes.CDLL('./extract_dependencies/parse.so').Parse
 parse.argtypes = [ctypes.c_char_p]
 parse.restype = ctypes.c_char_p
 
 
-compareVersion = ctypes.CDLL('./repocloneref/extract_dependencies/semver.so').compareVersion
+compareVersion = ctypes.CDLL('./extract_dependencies/semver.so').compareVersion
 compareVersion.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
 compareVersion.restype = ctypes.c_int
 
-isvalid = ctypes.CDLL('./repocloneref/extract_dependencies/semver.so').isValidVersion
+isvalid = ctypes.CDLL('./extract_dependencies/semver.so').isValidVersion
 isvalid.argtypes = [ctypes.c_char_p]
 isvalid.restype = ctypes.c_bool
 

@@ -86,6 +86,18 @@ def get_go_names_and_localpath(last_timestamp):
         cur.execute(sql_str)
         return dict(cur.fetchall())
 
+def get_affeted_localpath(affected_libs):
+    s = str(affected_libs).replace('[', '').replace(']', '')
+    with get_conn() as conn:
+        conn.autocommit = True
+        cur = conn.cursor()
+        sql_str = """SELECT sl.name, sr.local_path FROM public."2_scantist_repolist" as sr 
+                    inner join public."2_scantist_libraryrepourl" as slr on slr.repolist_id = sr.id
+                    inner join public.scantist_library as sl on sl.id = slr.library_id
+                    where sl.platform = 'Go' and sl.name in (%s) and sr.local_path is not null;""" % s
+        cur.execute(sql_str)
+        return dict(cur.fetchall())
+
 
 def get_repolist(name):
     conn.autocommit = True

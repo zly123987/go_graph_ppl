@@ -1,5 +1,5 @@
 import os
-from git import Repo
+from git import Repo, Git
 from extract_dependencies.mod_parser import parse_mod
 from extract_dependencies.test_semver import is_valid_version
 #get the latest version for each majorminor
@@ -31,23 +31,22 @@ def extract_package_master(dir, id):
 
 
 
-def extract_packages(dir, id):
+def extract_packages(dir, id, existing):
     repo = Repo(dir)
+    valid_branches = []
     tags = repo.tags
     tag_names = []
     lib_deps = {}
     for tag in tags:
         if is_valid_version(tag.name):
             tag_names.append(tag.name)
+    tag_names = [t for t in tag_names if t not in existing]
     os.chdir(dir)
-    # print(os.getcwd())
     count = 0
     if tag_names:
-    #    valid_tags, tag_dict, mm_tag_mapping = filter_tags_name(tag_names)
         for tag in tag_names:
             print(count, tag)
             count += 1
-            deps = {}
             repo.git.clean('-xdf')
             repo.git.checkout(tag, force=True)
             #os.system('git checkout ' + tag)
@@ -59,9 +58,16 @@ def extract_packages(dir, id):
         #     lib_deps[tag] = lib_deps[tag_dict[mm_tag_mapping[tag]]]
     # proc = subprocess.Popen('git checkout master', shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, bufsize=-1)
     # proc.wait()
-    repo.git.checkout('master', force=True)
-    deps = parse_mod(dir, id)
-    lib_deps['master'] = deps
+    else:
+        for branch in repo.heads:
+            if is_valid_version(branch.name):
+                valid_branches.append(branch.name)
+        valid_branches = [t for t in valid_branches if t not in existing]
+        for valid_branch in valid_branches:
+            print(count, valid_branch)
+            count += 1
+            repo.git.clean('-xdf')
+            repo.git.checkout(valid_branch, force=True)
+            deps = parse_mod(dir, id)
+            lib_deps[valid_branch] = deps
     return lib_deps
-#print(extract_packages('/home/lcwj3/go_repos/apns-experiment', 'apns-experiment'))
-

@@ -66,18 +66,38 @@ def get_all_affected_libs(vul_libs):
 
 
 def filter_affecte_libs():
-    added_libdepends = json.load(open('../all_dependencies.json', 'r'))
-    update_libdepends(added_libdepends)
-    update_reverse_libdepends(added_libdepends)
-    vulnerable_libs = _get_updated_vul_info()
-    get_all_affected_libs(vulnerable_libs)
-
-
-if __name__=='__main__':
-    # added_libdepends = json.load(open('all_dependencies.json', 'r'))
+    # added_libdepends = json.load(open('../all_dependencies.json', 'r'))
     # update_libdepends(added_libdepends)
     # update_reverse_libdepends(added_libdepends)
-    vulnerable_libs = ['github.com/seccomp/libseccomp-golang', 'github.com/couchbase/sync_gateway', 'github.com/ethereum/go-ethereum', 'github.com/sylabs/singularity', 'github.com/google/fscrypt', 'github.com/minio/minio', 'github.com/appc/docker2aci', 'github.com/docker/docker-ce', 'github.com/cockroachdb/cockroach', 'github.com/rkt/rkt', 'github.com/rancher/rancher', 'github.com/mastercactapus/proxyprotocol', 'github.com/kolide/fleet', 'github.com/kubevirt/containerized-data-importer', 'github.com/google/gvisor', 'github.com/opencontainers/runc', 'github.com/mholt/archiver', 'github.com/git-lfs/git-lfs', 'github.com/hashicorp/packer', 'github.com/go-gitea/gitea', 'github.com/goharbor/harbor', 'github.com/github/hub', 'github.com/btcsuite/go-socks', 'github.com/kubernetes/kubernetes', 'github.com/istio/istio', 'github.com/go-ldap/ldap', 'github.com/docker/docker-credential-helpers', 'github.com/gardener/gardener', 'github.com/containous/traefik', 'github.com/ehang-io/nps', 'github.com/gophish/gophish', 'github.com/jinzhu/gorm', 'github.com/astaxie/beego', 'github.com/golang/gddo', 'github.com/pydio/cells', 'github.com/snapcore/snapd', 'github.com/remind101/empire', 'github.com/satori/go.uuid', 'github.com/gogs/gogs', 'github.com/uber/prototool', 'github.com/uber/astro', 'github.com/grafana/grafana', 'github.com/apache/thrift', 'github.com/hashicorp/consul', 'github.com/heketi/heketi', 'github.com/kubernetes/kube-state-metrics', 'github.com/projectatomic/oci-register-machine', 'github.com/lxc/lxd', 'github.com/openshift/origin', 'github.com/concourse/concourse', 'github.com/cloudfoundry/cli', 'github.com/prometheus/prometheus', 'github.com/pusher/oauth2_proxy', 'github.com/docker/libcontainer', 'github.com/robbert229/jwt', 'github.com/openshift/source-to-image', 'github.com/miekg/dns', 'github.com/facebook/fbthrift', 'github.com/rclone/rclone', 'github.com/cloudfoundry/loggregator', 'github.com/hashicorp/nomad', 'github.com/etcd-io/etcd', 'github.com/square/go-jose', 'github.com/golang/go', 'github.com/hybridgroup/gobot', 'github.com/elastic/beats', 'github.com/containers/libpod', 'github.com/apache/trafficcontrol', 'github.com/cactus/go-camo', 'github.com/bitly/oauth2_proxy', 'github.com/helm/helm', 'github.com/containernetworking/plugins', 'github.com/wtfutil/wtf', 'github.com/pwnlandia/agave', 'github.com/nats-io/nats-server', 'github.com/moby/moby']
     # vulnerable_libs = _get_updated_vul_info()
+    vulnerable_libs = ['github.com/seccomp/libseccomp-golang', 'github.com/couchbase/sync_gateway',
+                       'github.com/ethereum/go-ethereum', 'github.com/sylabs/singularity', 'github.com/google/fscrypt',
+                       'github.com/minio/minio', 'github.com/appc/docker2aci', 'github.com/docker/docker-ce',
+                       'github.com/cockroachdb/cockroach', 'github.com/rkt/rkt', 'github.com/rancher/rancher',
+                       'github.com/mastercactapus/proxyprotocol', 'github.com/kolide/fleet',
+                       'github.com/kubevirt/containerized-data-importer', 'github.com/google/gvisor',
+                       'github.com/opencontainers/runc', 'github.com/mholt/archiver', 'github.com/git-lfs/git-lfs',
+                       'github.com/hashicorp/packer', 'github.com/go-gitea/gitea', 'github.com/goharbor/harbor',
+                       'github.com/github/hub', 'github.com/btcsuite/go-socks', 'github.com/kubernetes/kubernetes',
+                       'github.com/istio/istio', 'github.com/go-ldap/ldap',
+                       'github.com/docker/docker-credential-helpers', 'github.com/gardener/gardener',
+                       'github.com/containous/traefik', 'github.com/ehang-io/nps', 'github.com/gophish/gophish',
+                       'github.com/jinzhu/gorm', 'github.com/astaxie/beego', 'github.com/golang/gddo',
+                       'github.com/pydio/cells', 'github.com/snapcore/snapd', 'github.com/remind101/empire',
+                       'github.com/satori/go.uuid', 'github.com/gogs/gogs', 'github.com/uber/prototool',
+                       'github.com/uber/astro', 'github.com/grafana/grafana', 'github.com/apache/thrift',
+                       'github.com/hashicorp/consul', 'github.com/heketi/heketi',
+                       'github.com/kubernetes/kube-state-metrics', 'github.com/projectatomic/oci-register-machine',
+                       'github.com/lxc/lxd', 'github.com/openshift/origin', 'github.com/concourse/concourse',
+                       'github.com/cloudfoundry/cli', 'github.com/prometheus/prometheus',
+                       'github.com/pusher/oauth2_proxy', 'github.com/docker/libcontainer', 'github.com/robbert229/jwt',
+                       'github.com/openshift/source-to-image', 'github.com/miekg/dns', 'github.com/facebook/fbthrift',
+                       'github.com/rclone/rclone', 'github.com/cloudfoundry/loggregator', 'github.com/hashicorp/nomad',
+                       'github.com/etcd-io/etcd', 'github.com/square/go-jose', 'github.com/golang/go',
+                       'github.com/hybridgroup/gobot', 'github.com/elastic/beats', 'github.com/containers/libpod',
+                       'github.com/apache/trafficcontrol', 'github.com/cactus/go-camo', 'github.com/bitly/oauth2_proxy',
+                       'github.com/helm/helm', 'github.com/containernetworking/plugins', 'github.com/wtfutil/wtf',
+                       'github.com/pwnlandia/agave', 'github.com/nats-io/nats-server', 'github.com/moby/moby']
     get_all_affected_libs(vulnerable_libs)
+
 
