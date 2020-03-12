@@ -13,7 +13,6 @@ MONGO_USER = mongo.user
 MONGO_PWD = mongo.password
 MONGO_AUTH = mongo.auth_source
 MONGO_DB = mongo.db
-today = str(datetime.now()[:10])
 home_dir = os.getcwd()
 deps = {}
 count = 0
@@ -36,10 +35,10 @@ def generate_deps(repo_paths, index):
             master_dep = master.find_one({'name': name})
             if master_dep:
                 master_dep = master_dep['versions']
-                default_branch = master_dep.keys()[0]
+                default_branch = list(master_dep.keys())[0]
             stable_dep = stable.find_one({'name': name})
             if stable_dep:
-                existing_stable_dep = stable_dep['versions'].keys()
+                existing_stable_dep = list(stable_dep['versions'].keys())
 
             # Extract the new versions' dependencies
             deps = extract_packages(path, name, existing_stable_dep)
