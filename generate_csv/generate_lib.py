@@ -160,8 +160,6 @@ def generate_dep():
     """
     Generate 3 dependency csv files ()
     """
-
-
     with open(dir+"/depends.csv", "w") as f:
         writer = csv.writer(f)
         writer.writerow([':START_ID(Version)', ':END_ID(Library)', 'range', 'versions', ':TYPE'])
