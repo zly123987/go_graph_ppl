@@ -4,6 +4,7 @@ import re
 import os
 import pymongo
 import concurrent.futures
+from calculating_affected_libs.get_libaffect import get_updated_vul_info
 from extract_dependencies.test_semver import sort_versions, is_valid_version
 from lib.database import get_mongo_connection
 dir = 'generate_csv/csv'
@@ -12,9 +13,7 @@ lib_ver_doc = [['version', 'library', 'versionId:ID(Version)', ':LABEL']]
 upper_list = [[':START_ID(Version)', ':END_ID(Version)', ':TYPE']]
 lower_list = [[':START_ID(Version)', ':END_ID(Version)', ':TYPE']]
 has = [[':START_ID(Library)', ':END_ID(Version)', ':TYPE']]
-depend_list = [[':START_ID(Version)', ':END_ID(Library)', 'range', 'versions', ':TYPE']]
-default_list = [[':START_ID(Version)', ':END_ID(Version)', ':TYPE']]
-libdep_list = [[':START_ID(Library)', ':END_ID(Library)', ':TYPE']]
+
 
 mongo = get_mongo_connection()
 MONGO_HOST = mongo.host
@@ -92,6 +91,9 @@ def generate_basic():
 
 
 def parse(index):
+    depend_list = []
+    default_list = []
+    libdep_list = []
     if index in indices:
         return
     c1 = pymongo.MongoClient(MONGO_HOST, port=MONGO_PORT)
@@ -141,13 +143,13 @@ def parse(index):
         print('dep', index, count)
     c1.close()
 
-    with open(dir+"/depends" + str(index) + ".csv", "w") as f:
+    with open(dir+"/depends.csv", "a") as f:
         writer = csv.writer(f)
         writer.writerows(depend_list)
-    with open(dir+"/default" + str(index) + ".csv", "w") as f:
+    with open(dir+"/default.csv", "a") as f:
         writer = csv.writer(f)
         writer.writerows(default_list)
-    with open(dir+"/libdeps" + str(index) + ".csv", "w") as f:
+    with open(dir+"/libdepends.csv", "a") as f:
         writer = csv.writer(f)
         writer.writerows(libdep_list)
     with open(dir+"/missing" + str(index) + ".json", "w") as f:
@@ -158,11 +160,47 @@ def generate_dep():
     """
     Generate 3 dependency csv files ()
     """
-    with concurrent.futures.ProcessPoolExecutor(max_workers=8) as executor:
+
+
+    with open(dir+"/depends.csv", "w") as f:
+        writer = csv.writer(f)
+        writer.writerow([':START_ID(Version)', ':END_ID(Library)', 'range', 'versions', ':TYPE'])
+    with open(dir+"/default.csv", "w") as f:
+        writer = csv.writer(f)
+        writer.writerow([':START_ID(Version)', ':END_ID(Version)', ':TYPE'])
+    with open(dir+"/libdepends.csv", "w") as f:
+        writer = csv.writer(f)
+        writer.writerow([':START_ID(Library)', ':END_ID(Library)', ':TYPE'])
+    with concurrent.futures.ProcessPoolExecutor(max_workers=16) as executor:
         future_name = {executor.submit(parse, file): file for file in range(0, int(golang_size), limit)}
         for future in concurrent.futures.as_completed(future_name):
-            print('Done!')
+            pass
+    print('Dep generated')
+
+def generate_vul():
+    """
+    Generate vulnerable node csv with respective AFFECT relationships csv
+    """
+    libaffects_list, affect_list, vul_node_list = get_updated_vul_info()
+    with open(dir + "/vul_nodes.csv", "w") as f:
+        writer = csv.writer(f)
+        writer.writerow(["VulnerabilityId:ID(Vulnerability)", ":LABEL"])
+        for n in vul_node_list:
+            writer.writerow([n, "Vulnerability"])
+    with open(dir + "/vul_libaffects.csv", "w") as f:
+        writer = csv.writer(f)
+        writer.writerow([":START_ID(Vulnerability)", ":END_ID(Library)", ":TYPE"])
+        for n in libaffects_list:
+            writer.writerow([n[0], n[1], "LIBAFFECTS"])
+    with open(dir + "/vul_affects.csv", "w") as f:
+        writer = csv.writer(f)
+        writer.writerow([":START_ID(Vulnerability)", ":END_ID(Version)", ":TYPE"])
+        for n in affect_list:
+            writer.writerow([n[0], n[1], "AFFECTS"])
+    print('Vul node and rel generated')
+
 
 def generate_csv():
     generate_basic()
     generate_dep()
+    generate_vul()

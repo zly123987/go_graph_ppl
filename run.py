@@ -1,7 +1,7 @@
 import argparse
 import logging
 from extract_dependencies.master_dep_parse import run as parse_dep_for_new_libs
-from calculating_affected_libs.get_libdepends import filter_affecte_libs
+from calculating_affected_libs.get_libdepends import filter_affected_libs
 from extract_dependencies.run_dep_parse import run as parse_dep_for_affected_libs
 from generate_csv.generate_lib import generate_csv
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ def handle_args(step):
 
     elif step == 'filter_affected':
         try:
-            filter_affecte_libs()
+            filter_affected_libs()
         except Exception as e:
             logger.error(str(e))
 

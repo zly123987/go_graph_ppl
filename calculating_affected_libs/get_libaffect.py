@@ -35,7 +35,7 @@ ScantistLibraryVersionIssue = Base.classes.scantist_libraryversionissue
 ScantistSecurityIssue = Base.classes.scantist_securityissue
 
 
-def _get_updated_vul_info(timestamp=datetime.datetime(2017, 7, 25)):
+def get_updated_vul_info(timestamp=datetime.datetime(2017, 7, 25), lib_only=False):
     """
     start from issues from a timestamp which is stored last time we did this update,
     get all related versions and their libname, vendor, version number
@@ -99,14 +99,24 @@ def _get_updated_vul_info(timestamp=datetime.datetime(2017, 7, 25)):
                     "affects": {update[1] + ":" + update[0]: [update[2]]},
                 }
             )
-    vul_relation_list = []
+    libaffects_list = []
+    affect_list = []
     vulnerable_lib = []
     vul_node = add_node
+    vul_node_list = []
     for vul in vul_node:
         for libvendor, vers in vul["affects"].items():
             for ver in vers:
-                vul_relation_list.append((vul['public_id'], libvendor.lstrip(':')))
-                vulnerable_lib.append(libvendor.lstrip(':'))
-    vulnerable_lib =list(set(vulnerable_lib))
-    return vulnerable_lib
+                affect_list.append((vul['public_id'], libvendor.lstrip(':')+':'+ver))
+        libaffects_list.append((vul['public_id'], libvendor.lstrip(':')))
+        vulnerable_lib.append(libvendor.lstrip(':'))
+        vul_node_list.append(vul['public_id'])
+    vulnerable_lib = list(set(vulnerable_lib))
+    libaffects_list = list(set(libaffects_list))
+    affect_list = list(set(affect_list))
+    vul_node_list =list(set(vul_node_list))
+    if lib_only:
+        return vulnerable_lib
+    else:
+        return libaffects_list, affect_list, vul_node_list
 
