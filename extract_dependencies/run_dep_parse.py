@@ -53,7 +53,9 @@ def generate_deps(repo_paths, index, all_count):
                 'versions': {**deps, **master_dep, **existing_stable_dep}
             }
             if dependencies['versions']:
-                staging.insert(dependencies, check_keys=False)
+                staging_dep = staging.find_one({'name': name})
+                if not staging_dep:
+                    staging.insert(dependencies, check_keys=False)
         except Exception as e:
             print(e)
         lib_deps[name] = deps
