@@ -24,7 +24,7 @@ MONGO_AUTH = mongo.auth_source
 MONGO_DB = mongo.db
 c = pymongo.MongoClient(MONGO_HOST, port=MONGO_PORT)
 crawl = c['golang']
-golang = crawl['go_affected_dependencies_stable']
+golang = crawl['go_affected_dependencies_staging']
 golang_size = golang.count()
 indices = []
 limit = 1000
@@ -37,6 +37,7 @@ def generate_basic():
     """
     Generate all non-dependency csv files (lib, ver, has, upper, lower)
     """
+    global library_csv_doc, lib_ver_doc
     count = 0
     if not os.path.exists(dir):
         os.mkdir(dir)
@@ -44,6 +45,8 @@ def generate_basic():
     for file in golang.find(no_cursor_timeout=True):
         lib = file['name']
         content = file['versions']
+        if [lib, lib, 'Library'] in library_csv_doc:
+            continue 
         library_csv_doc.append([lib, lib, 'Library'])
         header = ''
         verlist = []
@@ -98,7 +101,7 @@ def parse(index):
         return
     c1 = pymongo.MongoClient(MONGO_HOST, port=MONGO_PORT)
     crawl1 = c1['golang']
-    golang1 = crawl1['go_affected_dependencies_stable']
+    golang1 = crawl1['go_affected_dependencies_staging']
     count = 0
     for file in golang1.find(no_cursor_timeout=True).skip(index).limit(limit):
         lib = file['name']
@@ -123,6 +126,7 @@ def parse(index):
                             raise RuntimeError('testError')
                 if deplib == lib:
                     continue
+                depver = re.split('\+|-', depver.strip())[0]
                 if deplib not in libvers:
                     missing_libs.append(deplib)
                     verlist = ''
@@ -136,9 +140,9 @@ def parse(index):
                 if verlist and latest:
                     depend_list.append([lib + ':' + ver, deplib, depver, verlist, 'DEPENDS'])
                     default_list.append([lib + ':' + ver, deplib + ':' + latest, 'DEFAULT'])
-                if lib + '--->' + deplib not in libdep_list_temp:
-                    libdep_list.append([lib, deplib, 'LIBDEPENDS'])
-                    libdep_list_temp.append(lib + '--->' + deplib)
+                    if lib + '--->' + deplib not in libdep_list_temp:
+                        libdep_list.append([lib, deplib, 'LIBDEPENDS'])
+                        libdep_list_temp.append(lib + '--->' + deplib)
         count += 1
         print('dep', index, count)
     c1.close()
@@ -189,16 +193,26 @@ def generate_vul():
         writer = csv.writer(f)
         writer.writerow([":START_ID(Vulnerability)", ":END_ID(Library)", ":TYPE"])
         for n in libaffects_list:
+            if n[1] not in libvers:
+                continue
             writer.writerow([n[0], n[1], "LIBAFFECTS"])
     with open(dir + "/vul_affects.csv", "w") as f:
         writer = csv.writer(f)
         writer.writerow([":START_ID(Vulnerability)", ":END_ID(Version)", ":TYPE"])
         for n in affect_list:
-            writer.writerow([n[0], n[1], "AFFECTS"])
+            library, version = n[1].split(':')
+            if re.match('^\d+\.\d+\.\d+$', version):
+                version = 'v'+version
+            else:
+                res = re.search('.*(v\d+\.\d+\.\d+).*', version)
+                if res:
+                    version = res[1]
+             
+            writer.writerow([n[0], library+':'+version, "AFFECTS"])
     print('Vul node and rel generated')
 
 
 def generate_csv():
-    generate_basic()
-    generate_dep()
+    #generate_basic()
+    #generate_dep()
     generate_vul()

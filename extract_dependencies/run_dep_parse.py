@@ -16,7 +16,8 @@ MONGO_DB = mongo.db
 home_dir = os.getcwd()
 deps = {}
 count = 0
-worker = 16
+worker = 12
+batch = 300
 
 def generate_deps(repo_paths, index, all_count):
     c = pymongo.MongoClient(MONGO_HOST, port=MONGO_PORT)
@@ -25,14 +26,16 @@ def generate_deps(repo_paths, index, all_count):
     staging = crawl['go_affected_dependencies_staging']
     stable = crawl['go_affected_dependencies_stable']
     master = crawl['go_libdepends']
-    master_dep = {}
-    existing_stable_dep = {}
-    lib_deps = {}
+    #lib_deps = {}
     count = 0
     for name, path in repo_paths.items():
-        print('index: ' + str(index) + ', count:' + str(count) + ', name: ' + name, all_count)
-        count += 1
         try:
+            print('index: ' + str(index) + ', count:' + str(count) + ', name: ' + name, all_count)
+            count += 1
+            master_dep = {}
+            existing_stable_dep = {}
+            default_branch = ''
+        
             # Get master branch(default) and other existing dependencies
             master_dep_doc = master.find_one({'name': name})
             if master_dep_doc:
@@ -58,8 +61,9 @@ def generate_deps(repo_paths, index, all_count):
                     staging.insert(dependencies, check_keys=False)
         except Exception as e:
             print(e)
-        lib_deps[name] = deps
-    return lib_deps
+        #lib_deps[name] = deps
+    c.close()
+#    return lib_deps
 # a = generate_deps({'rancher': '/home/lcwj3/go_repos/rancher'}, os.getcwd(), 0, 'github.com/rancher/rancher')
 # golang.insert(a, check_keys=False)
 # b = generate_deps({'public': '/home/lcwj3/go_repos/public'}, os.getcwd(), 1, 'github.com/rancher/rancher')
@@ -80,18 +84,23 @@ def run():
           , len(affected_libs)-len(repo_localpath), 'are missing.')
     all_count = len(repo_localpath)
     all_dependencies = {}
-    batch = 1000
     repo_localpath_list = []
     repo_path_tmp = {}
     for name, path in repo_localpath.items():
         repo_path_tmp[name] = path.replace('/REPOS', '/DATA')
-        if batch >= len(repo_path_tmp):
+        if batch == len(repo_path_tmp):
             repo_localpath_list.append(repo_path_tmp)
             repo_path_tmp = {}
 
     with concurrent.futures.ProcessPoolExecutor(max_workers=worker) as executor:
         future_name = {executor.submit(generate_deps, repo_localpath_list[file], file, all_count): file for file in range(int(len(repo_localpath_list)))}
         for future in concurrent.futures.as_completed(future_name):
-            all_dependencies = {**all_dependencies, **future.result()}
-
-    open('all_dependencies.json', 'w').write(json.dumps(all_dependencies))
+            #all_dependencies = {**all_dependencies, **future.result()}
+            pass
+    #open('all_dependencies.json', 'w').write(json.dumps(all_dependencies))
+    c = pymongo.MongoClient(MONGO_HOST, port=MONGO_PORT)
+    mongo_db = c['golang']
+    mongo_db['go_affected_dependencies_stable'].rename('go_affected_dependencies_last_backup')
+    mongo_db['go_affected_dependencies_staging'].rename('go_affected_dependencies_stable')
+    c.close()
+    
